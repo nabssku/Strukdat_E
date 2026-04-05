@@ -2,14 +2,14 @@ package demo.modul1;
 
 import java.util.Scanner;
 
-// ENUM
+// enum
 enum TicketClass {
     ECONOMY,
     BUSINESS,
     EXECUTIVE
 }
 
-// GENERIC PASSENGER
+// penumpang generic (bebas)
 class Passenger<T> {
     String name;
     T identityNumber;
@@ -20,7 +20,7 @@ class Passenger<T> {
     }
 }
 
-// GENERIC TICKET
+// tiket generic (bebas)
 class Ticket<T> {
     String bookingCode;
     Passenger<T> passenger;
@@ -33,7 +33,7 @@ class Ticket<T> {
     }
 }
 
-// WILDCARD METHOD
+// wilcard methd
 class TicketPrinter {
     public static void printTicket(Ticket<?> ticket) {
         System.out.println("\n=== Ticket Information ===");
@@ -49,7 +49,7 @@ public class task1 {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
-        System.out.println("=== Railway Ticket Booking ===");
+        System.out.println("=== Book Ticket Train ===");
 
         System.out.print("Enter Passenger Name: ");
         String name = input.nextLine();
@@ -57,6 +57,11 @@ public class task1 {
         System.out.print("Enter Identity Number: ");
         int id = input.nextInt();
         input.nextLine();
+
+        if(id < 0){
+            System.out.println("Identify Must Be Valid Number Like 00223123");
+            System.exit(0);
+        }
 
         System.out.print("Enter Booking Code: ");
         String code = input.nextLine();
