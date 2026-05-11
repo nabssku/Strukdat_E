@@ -1,250 +1,359 @@
 package demo.modul4;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 /**
  * ============================================================
  * Kelas EmployeeBST
- * Mengelola data pegawai menggunakan struktur Binary Search Tree (BST).
+ * Mengelola data pegawai menggunakan Binary Search Tree (BST).
  *
  * Aturan BST:
  *   - ID lebih KECIL dari root → masuk ke KIRI
  *   - ID lebih BESAR dari root → masuk ke KANAN
  *
- * Operasi: Insert, Search, Delete, Traversal (Inorder/Preorder/Postorder),
- *          FindMin, FindMax
+ * Fitur visualisasi pohon ditambahkan pada menu traversal
+ * agar struktur BST bisa terlihat langsung di terminal.
  * ============================================================
  */
 public class EmployeeBST {
 
-    private BSTNode root; // Akar dari pohon BST
+    private BSTNode root;
 
     // ================================================================
-    //  INSERT - Menambah pegawai baru
+    //  INSERT
     // ================================================================
-    /**
-     * Menambahkan pegawai baru ke dalam BST.
-     * Posisi ditentukan otomatis berdasarkan ID pegawai.
-     * @param emp Data pegawai yang akan ditambahkan
-     */
     public void insert(Employee emp) {
         root = insertRec(root, emp);
     }
 
-    /**
-     * Metode rekursif untuk menyisipkan node baru.
-     * Cara kerja:
-     *   1. Jika posisi kosong → buat node baru di sini
-     *   2. Jika ID baru < ID node saat ini → masuk ke kiri
-     *   3. Jika ID baru > ID node saat ini → masuk ke kanan
-     *   4. Jika ID sama → abaikan (tidak boleh duplikat)
-     */
     private BSTNode insertRec(BSTNode node, Employee emp) {
-        // Posisi kosong → ini tempatnya
         if (node == null) {
             System.out.println("  [+] Pegawai ditambahkan: " + emp);
             return new BSTNode(emp);
         }
-
-        int perbandingan = emp.compareTo(node.data);
-
-        if (perbandingan < 0) {
-            // ID lebih kecil → masuk ke subtree KIRI
-            node.left = insertRec(node.left, emp);
-        } else if (perbandingan > 0) {
-            // ID lebih besar → masuk ke subtree KANAN
-            node.right = insertRec(node.right, emp);
-        } else {
-            // ID sama → tidak diizinkan (BST tidak boleh duplikat)
-            System.out.println("  [!] ID " + emp.employeeId + " sudah ada. Tidak dapat menambahkan duplikat.");
-        }
-
+        int cmp = emp.compareTo(node.data);
+        if      (cmp < 0) node.left  = insertRec(node.left,  emp);
+        else if (cmp > 0) node.right = insertRec(node.right, emp);
+        else System.out.println("  [!] ID " + emp.employeeId + " sudah ada. Duplikat ditolak.");
         return node;
     }
 
     // ================================================================
-    //  SEARCH - Mencari pegawai berdasarkan ID
+    //  SEARCH
     // ================================================================
-    /**
-     * Mencari pegawai berdasarkan ID.
-     * @param id ID pegawai yang dicari
-     * @return Objek Employee jika ditemukan, null jika tidak ada
-     */
     public Employee search(int id) {
         BSTNode result = searchRec(root, id);
         return (result != null) ? result.data : null;
     }
 
-    /**
-     * Metode rekursif pencarian di BST.
-     * Cara kerja:
-     *   - Jika node kosong → tidak ditemukan
-     *   - Jika ID cocok → ketemu!
-     *   - Jika ID target < ID node → cari ke kiri
-     *   - Jika ID target > ID node → cari ke kanan
-     */
     private BSTNode searchRec(BSTNode node, int id) {
-        if (node == null) return null;           // Tidak ditemukan
-        if (node.data.employeeId == id) return node; // Ketemu!
-
-        if (id < node.data.employeeId) {
-            return searchRec(node.left, id);   // Cari ke kiri
-        } else {
-            return searchRec(node.right, id);  // Cari ke kanan
-        }
+        if (node == null) return null;
+        if (node.data.employeeId == id) return node;
+        return (id < node.data.employeeId)
+                ? searchRec(node.left, id)
+                : searchRec(node.right, id);
     }
 
     // ================================================================
-    //  DELETE - Menghapus pegawai berdasarkan ID
+    //  DELETE
     // ================================================================
-    /**
-     * Menghapus pegawai dengan ID tertentu dari BST.
-     * @param id ID pegawai yang akan dihapus
-     */
     public void delete(int id) {
         if (search(id) == null) {
             System.out.println("  [!] Pegawai dengan ID " + id + " tidak ditemukan.");
             return;
         }
         root = deleteRec(root, id);
-        System.out.println("  [-] Pegawai ID " + id + " berhasil dihapus dari sistem.");
+        System.out.println("  [-] Pegawai ID " + id + " berhasil dihapus.");
     }
 
-    /**
-     * Metode rekursif penghapusan dengan 3 kasus:
-     *
-     * KASUS 1 - Node adalah DAUN (tidak punya anak)
-     *   → Langsung hapus (kembalikan null)
-     *
-     * KASUS 2 - Node punya SATU ANAK
-     *   → Gantikan node ini dengan anaknya
-     *
-     * KASUS 3 - Node punya DUA ANAK
-     *   → Cari penerus in-order (nilai terkecil di subtree KANAN)
-     *   → Salin nilainya ke node ini, lalu hapus penerus tersebut
-     */
     private BSTNode deleteRec(BSTNode node, int id) {
         if (node == null) return null;
 
-        if (id < node.data.employeeId) {
-            // Target ada di subtree kiri
-            node.left = deleteRec(node.left, id);
+        if      (id < node.data.employeeId) node.left  = deleteRec(node.left,  id);
+        else if (id > node.data.employeeId) node.right = deleteRec(node.right, id);
+        else {
+            // Kasus 1 & 2: daun atau satu anak
+            if (node.left  == null) return node.right;
+            if (node.right == null) return node.left;
 
-        } else if (id > node.data.employeeId) {
-            // Target ada di subtree kanan
-            node.right = deleteRec(node.right, id);
-
-        } else {
-            // === Node target ditemukan ===
-
-            // KASUS 1 & 2: Tidak punya anak, atau hanya punya satu anak
-            if (node.left == null) return node.right;  // Tidak ada anak kiri
-            if (node.right == null) return node.left;  // Tidak ada anak kanan
-
-            // KASUS 3: Punya dua anak
-            // Cari penerus in-order = node terkecil di subtree KANAN
+            // Kasus 3: dua anak → ganti dengan penerus in-order (terkecil di kanan)
             BSTNode penerus = cariNodeTerkecil(node.right);
-
-            // Salin data penerus ke node ini
-            node.data = penerus.data;
-
-            // Hapus penerus dari subtree kanan
+            node.data  = penerus.data;
             node.right = deleteRec(node.right, penerus.data.employeeId);
         }
-
         return node;
     }
 
     // ================================================================
-    //  TRAVERSAL
+    //  TRAVERSAL — INORDER  (Kiri → Root → Kanan)
+    //  Hasil: urutan ID dari kecil ke besar
     // ================================================================
-
-    // --- INORDER: Kiri → Root → Kanan (Menghasilkan urutan ID terurut) ---
-    /**
-     * Inorder Traversal: menghasilkan daftar pegawai terurut berdasarkan ID (kecil ke besar).
-     */
     public void inorderTraversal() {
-        System.out.println("\n--- Inorder Traversal (Urut berdasarkan ID) ---");
-        inorderRec(root);
+        if (root == null) { System.out.println("  [!] BST masih kosong."); return; }
+
+        cetakVisualPohon();
+
+        System.out.println("\n  Urutan kunjungan  :  Kiri → Root → Kanan");
+        System.out.println("  ─────────────────────────────────────────────────");
+
+        // Kumpulkan urutan kunjungan untuk ditampilkan sebagai alur
+        List<String> urutan = new ArrayList<>();
+        inorderKumpulkan(root, urutan);
+
+        // Cetak alur panah
+        System.out.print("  ");
+        for (int i = 0; i < urutan.size(); i++) {
+            System.out.print(urutan.get(i));
+            if (i < urutan.size() - 1) System.out.print(" → ");
+        }
+        System.out.println();
+
+        // Cetak detail tiap node
+        System.out.println("\n  Detail data (urut ID kecil ke besar):");
+        System.out.println("  ─────────────────────────────────────────────────");
+        inorderCetak(root, 1);
         System.out.println();
     }
 
-    private void inorderRec(BSTNode node) {
+    private void inorderKumpulkan(BSTNode node, List<String> list) {
         if (node == null) return;
-        inorderRec(node.left);                         // 1. Kunjungi kiri
-        System.out.println("  " + node.data);          // 2. Cetak node ini
-        inorderRec(node.right);                        // 3. Kunjungi kanan
+        inorderKumpulkan(node.left, list);
+        list.add(String.valueOf(node.data.employeeId));
+        inorderKumpulkan(node.right, list);
     }
 
-    // --- PREORDER: Root → Kiri → Kanan (Struktur hierarki) ---
-    /**
-     * Preorder Traversal: cetak root lebih dulu, lalu subtree kiri, lalu kanan.
-     */
+    private void inorderCetak(BSTNode node, int[] nomor) {
+        if (node == null) return;
+        inorderCetak(node.left, nomor);
+        System.out.printf("  %2d. %s%n", nomor[0]++, node.data);
+        inorderCetak(node.right, nomor);
+    }
+
+    // Overload helper agar bisa passing counter
+    private void inorderCetak(BSTNode node, int mulai) {
+        int[] counter = {mulai};
+        inorderCetakHelper(root, counter);
+    }
+
+    private void inorderCetakHelper(BSTNode node, int[] counter) {
+        if (node == null) return;
+        inorderCetakHelper(node.left, counter);
+        System.out.printf("  %2d. %s%n", counter[0]++, node.data);
+        inorderCetakHelper(node.right, counter);
+    }
+
+    // ================================================================
+    //  TRAVERSAL — PREORDER  (Root → Kiri → Kanan)
+    //  Hasil: urutan seperti struktur pohon (atas ke bawah)
+    // ================================================================
     public void preorderTraversal() {
-        System.out.println("\n--- Preorder Traversal (Root → Kiri → Kanan) ---");
-        preorderRec(root);
+        if (root == null) { System.out.println("  [!] BST masih kosong."); return; }
+
+        cetakVisualPohon();
+
+        System.out.println("\n  Urutan kunjungan  :  Root → Kiri → Kanan");
+        System.out.println("  ─────────────────────────────────────────────────");
+
+        List<String> urutan = new ArrayList<>();
+        preorderKumpulkan(root, urutan);
+
+        System.out.print("  ");
+        for (int i = 0; i < urutan.size(); i++) {
+            System.out.print(urutan.get(i));
+            if (i < urutan.size() - 1) System.out.print(" → ");
+        }
+        System.out.println();
+
+        System.out.println("\n  Detail data (urutan preorder):");
+        System.out.println("  ─────────────────────────────────────────────────");
+        int[] counter = {1};
+        preorderCetak(root, counter);
         System.out.println();
     }
 
-    private void preorderRec(BSTNode node) {
+    private void preorderKumpulkan(BSTNode node, List<String> list) {
         if (node == null) return;
-        System.out.println("  " + node.data);          // 1. Cetak node ini
-        preorderRec(node.left);                        // 2. Kunjungi kiri
-        preorderRec(node.right);                       // 3. Kunjungi kanan
+        list.add(String.valueOf(node.data.employeeId));
+        preorderKumpulkan(node.left, list);
+        preorderKumpulkan(node.right, list);
     }
 
-    // --- POSTORDER: Kiri → Kanan → Root (Bottom-up) ---
-    /**
-     * Postorder Traversal: kunjungi kedua subtree dulu, cetak node terakhir.
-     */
+    private void preorderCetak(BSTNode node, int[] counter) {
+        if (node == null) return;
+        System.out.printf("  %2d. %s%n", counter[0]++, node.data);
+        preorderCetak(node.left, counter);
+        preorderCetak(node.right, counter);
+    }
+
+    // ================================================================
+    //  TRAVERSAL — POSTORDER  (Kiri → Kanan → Root)
+    //  Hasil: daun-daun duluan, root paling akhir
+    // ================================================================
     public void postorderTraversal() {
-        System.out.println("\n--- Postorder Traversal (Kiri → Kanan → Root) ---");
-        postorderRec(root);
+        if (root == null) { System.out.println("  [!] BST masih kosong."); return; }
+
+        cetakVisualPohon();
+
+        System.out.println("\n  Urutan kunjungan  :  Kiri → Kanan → Root");
+        System.out.println("  ─────────────────────────────────────────────────");
+
+        List<String> urutan = new ArrayList<>();
+        postorderKumpulkan(root, urutan);
+
+        System.out.print("  ");
+        for (int i = 0; i < urutan.size(); i++) {
+            System.out.print(urutan.get(i));
+            if (i < urutan.size() - 1) System.out.print(" → ");
+        }
+        System.out.println();
+
+        System.out.println("\n  Detail data (urutan postorder):");
+        System.out.println("  ─────────────────────────────────────────────────");
+        int[] counter = {1};
+        postorderCetak(root, counter);
         System.out.println();
     }
 
-    private void postorderRec(BSTNode node) {
+    private void postorderKumpulkan(BSTNode node, List<String> list) {
         if (node == null) return;
-        postorderRec(node.left);                       // 1. Kunjungi kiri
-        postorderRec(node.right);                      // 2. Kunjungi kanan
-        System.out.println("  " + node.data);          // 3. Cetak node ini
+        postorderKumpulkan(node.left, list);
+        postorderKumpulkan(node.right, list);
+        list.add(String.valueOf(node.data.employeeId));
+    }
+
+    private void postorderCetak(BSTNode node, int[] counter) {
+        if (node == null) return;
+        postorderCetak(node.left, counter);
+        postorderCetak(node.right, counter);
+        System.out.printf("  %2d. %s%n", counter[0]++, node.data);
     }
 
     // ================================================================
     //  FIND MIN & MAX
     // ================================================================
-
-    /**
-     * Mencari pegawai dengan ID terkecil.
-     * Dalam BST, ID terkecil selalu ada di node paling KIRI.
-     */
     public Employee findMin() {
-        if (root == null) {
-            System.out.println("  [!] BST masih kosong.");
-            return null;
-        }
+        if (root == null) { System.out.println("  [!] BST masih kosong."); return null; }
         return cariNodeTerkecil(root).data;
     }
 
-    /**
-     * Mencari pegawai dengan ID terbesar.
-     * Dalam BST, ID terbesar selalu ada di node paling KANAN.
-     */
     public Employee findMax() {
-        if (root == null) {
-            System.out.println("  [!] BST masih kosong.");
-            return null;
-        }
+        if (root == null) { System.out.println("  [!] BST masih kosong."); return null; }
         return cariNodeTerbesar(root).data;
     }
 
-    // Helper: terus ke kiri sampai tidak bisa lagi
     private BSTNode cariNodeTerkecil(BSTNode node) {
-        if (node.left == null) return node;
-        return cariNodeTerkecil(node.left);
+        return (node.left == null) ? node : cariNodeTerkecil(node.left);
     }
 
-    // Helper: terus ke kanan sampai tidak bisa lagi
     private BSTNode cariNodeTerbesar(BSTNode node) {
-        if (node.right == null) return node;
-        return cariNodeTerbesar(node.right);
+        return (node.right == null) ? node : cariNodeTerbesar(node.right);
+    }
+
+    public void cetakVisualPohon() {
+        System.out.println();
+        System.out.println("  ╔══════════════════════════════════════════════════╗");
+        System.out.println("  ║           VISUALISASI POHON BST                  ║");
+        System.out.println("  ║   Baca: atas = kanan (ID besar)                  ║");
+        System.out.println("  ║         bawah = kiri  (ID kecil)                 ║");
+        System.out.println("  ╚══════════════════════════════════════════════════╝");
+        System.out.println();
+
+        if (root == null) {
+            System.out.println("  (pohon kosong)");
+            return;
+        }
+
+        // Cetak pohon secara rekursif dengan indentasi
+        cetakPohonRec(root, "", true, true);
+        System.out.println();
+
+        // Cetak juga versi per level (BFS) agar lebih mudah dipahami
+        cetakPerLevel();
+    }
+
+    /**
+     * Mencetak pohon secara rekursif dengan garis sambung.
+     * Pohon "diputar" 90 derajat: kanan di atas, kiri di bawah.
+     *
+     * @param node    Node yang sedang diproses
+     * @param prefix  Indentasi/garis dari level atas
+     * @param isRoot  Apakah node ini root?
+     * @param isRight Apakah node ini anak kanan dari induknya?
+     */
+    private void cetakPohonRec(BSTNode node, String prefix, boolean isRoot, boolean isRight) {
+        if (node == null) return;
+
+        // Cetak anak kanan duluan (tampil di atas di terminal)
+        if (node.right != null) {
+            String sambungan = isRoot ? "        " : (isRight ? "│       " : "        ");
+            cetakPohonRec(node.right, prefix + sambungan, false, true);
+        }
+
+        // Cetak node saat ini
+        String konektor;
+        String label;
+
+        if (isRoot) {
+            konektor = "";
+            label    = "[R]"; // Root
+        } else if (isRight) {
+            konektor = "┌───";
+            label    = "[r]"; // right child
+        } else {
+            konektor = "└───";
+            label    = "[L]"; // left child
+        }
+
+        System.out.printf("  %s%s%s ID:%-4d  %-15s  %s%n",
+                prefix,
+                konektor,
+                label,
+                node.data.employeeId,
+                node.data.name,
+                node.data.position);
+
+        // Cetak anak kiri setelahnya (tampil di bawah di terminal)
+        if (node.left != null) {
+            String sambungan = isRoot ? "        " : (isRight ? "        " : "│       ");
+            cetakPohonRec(node.left, prefix + sambungan, false, false);
+        }
+    }
+
+    /**
+     * Mencetak pohon per level (BFS / Level-Order).
+     * Berguna untuk melihat dengan jelas node mana yang ada di level mana.
+     */
+    private void cetakPerLevel() {
+        System.out.println("  ┌─────────────────────────────────────────────────┐");
+        System.out.println("  │  Tampilan per Level (kiri ke kanan)              │");
+        System.out.println("  └─────────────────────────────────────────────────┘");
+
+        Queue<BSTNode> antrian = new LinkedList<>();
+        antrian.add(root);
+        int level = 0;
+
+        while (!antrian.isEmpty()) {
+            int jumlahLevel = antrian.size();
+            System.out.printf("  Level %d : ", level);
+
+            for (int i = 0; i < jumlahLevel; i++) {
+                BSTNode current = antrian.poll();
+
+                // Cetak ID dengan nama singkat
+                String namaSingkat = current.data.name.split(" ")[0]; // ambil nama depan
+                System.out.printf("[%d/%s]", current.data.employeeId, namaSingkat);
+
+                if (i < jumlahLevel - 1) System.out.print("  ");
+
+                if (current.left  != null) antrian.add(current.left);
+                if (current.right != null) antrian.add(current.right);
+            }
+            System.out.println();
+            level++;
+        }
+        System.out.println();
     }
 }

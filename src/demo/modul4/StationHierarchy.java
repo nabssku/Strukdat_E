@@ -72,7 +72,7 @@ public class StationHierarchy {
      * Cara kerja: cek node saat ini → cari ke semua anaknya satu per satu.
      */
     private StationNode findStationRec(StationNode current, String code) {
-        // Jika node kosong, langsung kembalikan null
+        // Jika node kosong, kembalikan null
         if (current == null) return null;
 
         // Jika kode node ini cocok, kembalikan node ini
