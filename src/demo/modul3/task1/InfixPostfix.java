@@ -4,7 +4,6 @@ import java.util.*;
 
 public class InfixPostfix {
 
-    // PRIORITY OPERATOR
     public static int precedence(char op) {
         if (op == '+' || op == '-') return 1;
         if (op == '*' || op == '/') return 2;
@@ -19,14 +18,29 @@ public class InfixPostfix {
         for (int i = 0; i < exp.length(); i++) {
             char c = exp.charAt(i);
 
-            // angka
+
+            if (c == ' ') continue;
+
+            // kalau angka (bisa lebih dari 1 digit)
             if (Character.isDigit(c)) {
-                result.append(c).append(" ");
+                while (i < exp.length() && Character.isDigit(exp.charAt(i))) {
+                    result.append(exp.charAt(i));
+                    i++;
+                }
+                result.append(" ");
+                i--;
             }
+
+            // kalau minus tapi jadi tanda negatif
+            else if (c == '-' && (i == 0 || exp.charAt(i - 1) == '(')) {
+                result.append(c); // gabung ke angka
+            }
+
             // kurung buka
             else if (c == '(') {
                 stack.push(c);
             }
+
             // kurung tutup
             else if (c == ')') {
                 while (!stack.isEmpty() && stack.peek() != '(') {
@@ -34,6 +48,7 @@ public class InfixPostfix {
                 }
                 stack.pop();
             }
+
             // operator
             else if (c == '+' || c == '-' || c == '*' || c == '/') {
                 while (!stack.isEmpty() &&
@@ -51,7 +66,7 @@ public class InfixPostfix {
         return result.toString();
     }
 
-    // EVALUASI POSTFIX
+    // eval postpik
     public static double evaluatePostfix(String postfix) {
         Stack<Double> stack = new Stack<>();
         String[] tokens = postfix.split(" ");
@@ -59,7 +74,9 @@ public class InfixPostfix {
         for (String token : tokens) {
             if (token.isEmpty()) continue;
 
-            if (Character.isDigit(token.charAt(0))) {
+            // kalau angka (termasuk negatif)
+            if (Character.isDigit(token.charAt(0)) ||
+                    (token.length() > 1 && token.charAt(0) == '-')) {
                 stack.push(Double.parseDouble(token));
             } else {
                 double b = stack.pop();

@@ -66,7 +66,7 @@ public class ScheduleService {
 
         do {
             System.out.println("\n=== TRAIN SCHEDULE MENU ===");
-            System.out.println("1. Tambah di Awal");
+            System.out.println("1. Tambah di Awal | Prioritas");
             System.out.println("2. Tambah di Akhir");
             System.out.println("3. Hapus Jadwal Pertama");
             System.out.println("4. Hapus Jadwal Terakhir");

@@ -2,14 +2,13 @@ package demo.modul1;
 
 import java.util.Scanner;
 
-// enum
+// enu
 enum TicketClass {
     ECONOMY,
     BUSINESS,
     EXECUTIVE
 }
 
-// penumpang generic (bebas)
 class Passenger<T> {
     String name;
     T identityNumber;
@@ -20,7 +19,7 @@ class Passenger<T> {
     }
 }
 
-// tiket generic (bebas)
+
 class Ticket<T> {
     String bookingCode;
     Passenger<T> passenger;
@@ -33,12 +32,12 @@ class Ticket<T> {
     }
 }
 
-// wilcard methd
+
 class TicketPrinter {
     public static void printTicket(Ticket<?> ticket) {
         System.out.println("\n=== Ticket Information ===");
-        System.out.println("Booking Code     : " + ticket.bookingCode);
-        System.out.println("Passenger Name   : " + ticket.passenger.name);
+        System.out.println("Kode Booking     : " + ticket.bookingCode);
+        System.out.println("Nama Penumpang   : " + ticket.passenger.name);
         System.out.println("Identity Type    : " + ticket.passenger.identityNumber.getClass().getSimpleName());
         System.out.println("Identity Number  : " + ticket.passenger.identityNumber);
         System.out.println("Ticket Class     : " + ticket.ticketClass);
@@ -51,22 +50,17 @@ public class task1 {
 
         System.out.println("=== Book Ticket Train ===");
 
-        System.out.print("Enter Passenger Name: ");
+        System.out.print("Masukan Passenger Nama: ");
         String name = input.nextLine();
 
-        System.out.print("Enter Identity Number: ");
-        int id = input.nextInt();
-        input.nextLine();
+        System.out.print("Masukan Identity Nomor: ");
+        String id = input.nextLine();
 
-        if(id < 0){
-            System.out.println("Identify Must Be Valid Number Like 00223123");
-            System.exit(0);
-        }
 
-        System.out.print("Enter Booking Code: ");
+        System.out.print("Masukan Booking Kode: ");
         String code = input.nextLine();
 
-        System.out.println("\nSelect Ticket Class:");
+        System.out.println("\nPilih Ticket Class:");
         System.out.println("1. ECONOMY");
         System.out.println("2. BUSINESS");
         System.out.println("3. EXECUTIVE");
@@ -88,11 +82,11 @@ public class task1 {
                 selectedClass = TicketClass.ECONOMY;
         }
 
-        // CREATE OBJECT (GENERIC)
-        Passenger<Integer> passenger = new Passenger<>(name, id);
-        Ticket<Integer> ticket = new Ticket<>(code, passenger, selectedClass);
 
-        // PRINT (WILDCARD)
+        Passenger<?> passenger = new Passenger<>(name, id);
+        Ticket<?> ticket = new Ticket<>(code, passenger, selectedClass);
+
+
         TicketPrinter.printTicket(ticket);
     }
 }

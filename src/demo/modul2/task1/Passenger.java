@@ -4,6 +4,7 @@ public class Passenger {
 
     private static int nextId = 1001;
 
+
     private int id;
     private String fullName;
     private String email;
@@ -33,8 +34,8 @@ public class Passenger {
         this.age = age;
     }
 
-    public void showDetail() {
-        System.out.println("[" + id + "] "
+    public void showDetail(int index) {
+        System.out.println("["+ index +"]|[" + id + "] "
                 + fullName + " | " + email
                 + " | " + phoneNumber
                 + " | Age: " + age);

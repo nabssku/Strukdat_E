@@ -2,45 +2,45 @@ package demo.modul3.task2;
 
 import java.util.*;
 
-public class RailwaySystem {
+public class tiketKAI {
 
-    static Queue<String> queue = new LinkedList<>();
+    static Queue<String> antrian = new LinkedList<>();
     static Stack<String> history = new Stack<>();
 
     static Scanner input = new Scanner(System.in);
 
     public static void addPassenger() {
-        System.out.print("Enter passenger name: ");
+        System.out.print("Enter Penumpang Nama: ");
         String name = input.nextLine();
 
-        queue.add(name);
-        System.out.println("Passenger added to queue.");
+        antrian.add(name);
+        System.out.println("Penumpang ditambahkan to antrian.");
     }
 
     public static void displayQueue() {
-        if (queue.isEmpty()) {
+        if (antrian.isEmpty()) {
             System.out.println("Antrian Sedang Kosong..");
             return;
         }
 
-        System.out.println("Current Queue:");
+        System.out.println("Antrian Sekarang:");
         int i = 1;
-        for (String p : queue) {
+        for (String p : antrian) {
             System.out.println(i++ + ". " + p);
         }
     }
 
     public static void servePassenger() {
-        if (queue.isEmpty()) {
+        if (antrian.isEmpty()) {
             System.out.println("Tidak Ada yang bisa dilayani, santai dulu.");
             return;
         }
 
-        String served = queue.poll();
-        System.out.println("Serving passenger: " + served);
+        String served = antrian.poll();
+        System.out.println("Melayani Penumpang: " + served);
 
         history.push(served);
-        System.out.println("Transaction saved.");
+        System.out.println("Transaction Tersimpan.");
     }
 
     public static void undo() {
@@ -50,23 +50,23 @@ public class RailwaySystem {
         }
 
         String last = history.pop();
-        queue.add(last);
+        antrian.add(last);
 
-        System.out.println("Undo transaction for passenger: " + last);
+        System.out.println("Undo transaction for Penumpang: " + last);
     }
 
     public static void main(String[] args) {
         int choice;
 
         do {
-            System.out.println("\n=== Railway Ticket Service ===");
-            System.out.println("1. Add Passenger");
-            System.out.println("2. Display Queue");
-            System.out.println("3. Serve Passenger");
-            System.out.println("4. Undo Last Transaction");
+            System.out.println("\n=== KAI Tiket  ===");
+            System.out.println("1. Tambah Penumpang");
+            System.out.println("2. Tampilkan Antrian");
+            System.out.println("3. Layani Penumpang");
+            System.out.println("4. Kembali Trakhir Transaction");
             System.out.println("0. Exit");
 
-            System.out.print("Choose menu: ");
+            System.out.print("Pilih menu: ");
             choice = input.nextInt();
             input.nextLine(); // clear buffer
 

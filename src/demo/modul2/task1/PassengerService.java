@@ -11,12 +11,12 @@ public class PassengerService {
         passengerList = new ArrayList<>();
     }
 
-    // Tambah penumpang
+
     public void registerPassenger(Passenger passenger) {
         passengerList.add(passenger);
     }
 
-    // Ambil berdasarkan index
+
     public Passenger getPassengerAt(int index) {
         if (index < 0 || index >= passengerList.size()) {
             System.out.println("Index tidak valid.");
@@ -28,12 +28,13 @@ public class PassengerService {
     // Cari berdasarkan nama (linear search)
     public void findPassengerByName(String name) {
         boolean found = false;
-
+        int index = 0;
         for (Passenger p : passengerList) {
             if (p.getFullName().equalsIgnoreCase(name)) {
-                p.showDetail();
+                p.showDetail(index);
                 found = true;
             }
+            index++;
         }
 
         if (!found) {
@@ -60,9 +61,10 @@ public class PassengerService {
             System.out.println("Belum ada penumpang terdaftar.");
             return;
         }
-
+        int index = 0;
         for (Passenger p : passengerList) {
-            p.showDetail();
+            p.showDetail(index);
+            index++;
         }
     }
 
